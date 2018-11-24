@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -9,14 +9,21 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent {
   // $ at the end of var means it is observable
-  courses$: Observable<{}[]>;
-  course$: Observable<{}>;
-  author$;
-
+  coursesList$: AngularFireList<{}>;
+  courses$: Observable<{}>;
+  // course$: Observable<{}>;
+  author$: Observable<{}>;
+  // db: AngularFireDatabase;
 
   constructor(db: AngularFireDatabase) {
-    this.courses$ = db.list('/courses').valueChanges();
-    this.course$ = db.object('/courses/1').valueChanges().pipe();
-    this.author$ = db.object('author/1');
+    this.coursesList$ = db.list('/courses');
+    this.courses$ = this.coursesList$.valueChanges();
+    // this.course$ = db.object('/courses/1').valueChanges();
+    this.author$ = db.object('/authors/1').valueChanges();
+  }
+
+  add(course: HTMLInputElement) {
+    this.coursesList$.push(course.value);
+    course.value = '';
   }
 }
